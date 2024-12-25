@@ -49,4 +49,22 @@ public class UserDaoImplTests {
                 eq("SELECT id, name, username, password FROM users"),
                 ArgumentMatchers.<UserDaoImpl.UserRowMapper>any());
     }
+
+    @Test
+    public void testThatUpdateGeneratesCorrectSQL() {
+        User user = TestDataUtil.createTestUserA();
+        underTest.update(user.getId(), user);
+
+        verify(jdbcTemplate).update(
+                "UPDATE users SET id = ?, name = ?, username = ?, password = ? WHERE id = ?",
+                user.getId(), user.getName(), user.getUsername(), user.getPassword(), user.getId());
+    }
+
+    @Test
+    public void testThatDeleteGeneratesCorrectSQL() {
+        underTest.delete(1L);
+        verify(jdbcTemplate).update(
+                "DELETE FROM users WHERE id = ?",
+                1L);
+    }
 }

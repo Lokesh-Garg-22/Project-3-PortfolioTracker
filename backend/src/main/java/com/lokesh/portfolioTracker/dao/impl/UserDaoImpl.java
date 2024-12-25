@@ -58,4 +58,17 @@ public class UserDaoImpl implements UserDao {
                 userRowMapper);
     }
 
+    @Override
+    public void update(long id, User user) {
+        jdbcTemplate.update(
+                "UPDATE users SET id = ?, name = ?, username = ?, password = ? WHERE id = ?",
+                user.getId(), user.getName(), user.getUsername(), user.getPassword(), id);
+    }
+
+    @Override
+    public void delete(long id) {
+        jdbcTemplate.update(
+                "DELETE FROM users WHERE id = ?", id);
+    }
+
 }
