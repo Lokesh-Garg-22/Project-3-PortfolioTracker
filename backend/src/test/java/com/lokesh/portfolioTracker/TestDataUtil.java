@@ -8,7 +8,7 @@ public final class TestDataUtil {
 
     public static User createTestUserA() {
         return User.builder()
-                .id(1L)
+                // .id(1L)
                 .name("A User Test")
                 .username("a_usertest")
                 .password("a_usertest")
@@ -17,7 +17,7 @@ public final class TestDataUtil {
 
     public static User createTestUserB() {
         return User.builder()
-                .id(2L)
+                // .id(2L)
                 .name("B User Test")
                 .username("b_usertest")
                 .password("b_usertest")
@@ -26,7 +26,7 @@ public final class TestDataUtil {
 
     public static User createTestUserC() {
         return User.builder()
-                .id(3L)
+                // .id(3L)
                 .name("C User Test")
                 .username("c_usertest")
                 .password("c_usertest")
