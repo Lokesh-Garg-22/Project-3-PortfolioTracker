@@ -1,7 +1,9 @@
-package com.lokesh.portfolioTracker.domain;
+package com.lokesh.portfolioTracker.domain.entities;
 
 import lombok.Data;
 import lombok.Builder;
+
+import java.sql.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,17 +18,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "stocks")
+public class StockEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stock_id_seq")
     private Long id;
 
     private String name;
 
-    private String username;
+    private String symbol;
 
-    private String password;
+    @Builder.Default
+    private Number price = 0;
+
+    private Date lastUpdated;
 
 }

@@ -1,13 +1,13 @@
 package com.lokesh.portfolioTracker;
 
-import com.lokesh.portfolioTracker.domain.User;
+import com.lokesh.portfolioTracker.domain.entities.UserEntity;
 
 public final class TestDataUtil {
     private TestDataUtil() {
     }
 
-    public static User createTestUserA() {
-        return User.builder()
+    public static UserEntity createTestUserA() {
+        return UserEntity.builder()
                 // .id(1L)
                 .name("A User Test")
                 .username("a_usertest")
@@ -15,8 +15,8 @@ public final class TestDataUtil {
                 .build();
     }
 
-    public static User createTestUserB() {
-        return User.builder()
+    public static UserEntity createTestUserB() {
+        return UserEntity.builder()
                 // .id(2L)
                 .name("B User Test")
                 .username("b_usertest")
@@ -24,8 +24,8 @@ public final class TestDataUtil {
                 .build();
     }
 
-    public static User createTestUserC() {
-        return User.builder()
+    public static UserEntity createTestUserC() {
+        return UserEntity.builder()
                 // .id(3L)
                 .name("C User Test")
                 .username("c_usertest")
