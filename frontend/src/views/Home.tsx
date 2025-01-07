@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <RootDiv className="bg-[url(/bg.jpg)] bg-no-repeat bg-bottom bg-fixed bg-auto bg-blend-overlay bg-white/80 dark:bg-black/80">
+    <RootDiv variant="image">
       <RootSection
         id="Hero"
         className="min-h-[calc(100vh-10rem)] flex flex-col-reverse sm:flex-row justify-center text-center gap-8"

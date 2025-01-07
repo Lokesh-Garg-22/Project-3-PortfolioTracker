@@ -14,26 +14,29 @@ import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DetailedHTMLProps, HTMLAttributes } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(2).max(50),
-  cpassword: z.string().min(2).max(50),
+  stock: z.string(),
+  quantity: z.string(),
 });
 
-export default function SignUpForm({
+export default function UpdateStockForm({
   className,
+  stockId,
   ...props
-}: DetailedHTMLProps<HTMLAttributes<HTMLFormElement>, HTMLFormElement>) {
+}: DetailedHTMLProps<HTMLAttributes<HTMLFormElement>, HTMLFormElement> & {
+  stockId?: string | undefined;
+}) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      password: "",
-      cpassword: "",
+      stock: "",
+      quantity: "",
     },
   });
 
@@ -51,12 +54,12 @@ export default function SignUpForm({
       >
         <FormField
           control={form.control}
-          name="username"
+          name="stock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Select Stock</FormLabel>
               <FormControl>
-                <Input placeholder="username" {...field} />
+                <Input placeholder="stock" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,37 +67,33 @@ export default function SignUpForm({
         />
         <FormField
           control={form.control}
-          name="password"
+          name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Quantity</FormLabel>
               <FormControl>
-                <Input placeholder="password" {...field} />
+                <Input
+                  placeholder="quantity"
+                  type="number"
+                  min={1}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="cpassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Re-Enter Password</FormLabel>
-              <FormControl>
-                <Input placeholder="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <TypographyP>
-          Allready have an account?
-          <Button variant="link" className="px-2" asChild>
-            <Link href="/login">Login</Link>
+        <div className="flex gap-2">
+          <Button type="submit">Update</Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              router.back();
+            }}
+          >
+            Go Back
           </Button>
-        </TypographyP>
-        <Button type="submit">Sign Up</Button>
+        </div>
       </form>
     </Form>
   );

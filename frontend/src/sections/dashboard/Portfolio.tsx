@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH2 } from "@/components/ui/typography";
+import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Portfolio() {
@@ -30,7 +31,7 @@ export default function Portfolio() {
   return (
     <section className="m-8">
       <TypographyH2>Portfolio</TypographyH2>
-      <div className="my-4 border-2 flex flex-col rounded">
+      <div className="my-4 border-2 flex flex-col rounded bg-background">
         <Table>
           <TableHeader>
             <TableRow>
@@ -64,7 +65,9 @@ export default function Portfolio() {
       </div>
       <div className="flex gap-4">
         <Button asChild>
-          <Link href="/addstock">Add Stock</Link>
+          <Link href="/addStock">
+            <PlusIcon /> Add Stock
+          </Link>
         </Button>
         <Button asChild>
           <Link href="/portfolio">Update Portfolio</Link>

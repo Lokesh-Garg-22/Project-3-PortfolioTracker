@@ -19,8 +19,13 @@ export default function Navbar() {
     <>
       <nav className="h-14 w-full fixed border-b backdrop-blur-md">
         <div className="flex items-center justify-between p-2 m-auto max-w-screen-lg">
-          <TypographyH1>Tracker</TypographyH1>
+          <Link href="/">
+            <TypographyH1>Tracker</TypographyH1>
+          </Link>
           <div className="flex gap-1">
+            <Button variant="outline" asChild>
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
             <Button variant="outline" asChild>
               <Link href="/login">Login</Link>
             </Button>

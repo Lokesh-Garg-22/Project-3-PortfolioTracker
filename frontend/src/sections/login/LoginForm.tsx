@@ -37,6 +37,7 @@ export default function LoginForm({
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    alert("//TODO");
   }
 
   return (
