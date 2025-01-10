@@ -1,10 +1,10 @@
 const localStorageKeyUser = "user";
 const localdata = {
   getUser: () => {
-    return localStorage.getItem(localStorageKeyUser);
+    return JSON.parse(localStorage.getItem(localStorageKeyUser) || "");
   },
-  setUser: (user: string) => {
-    localStorage.setItem(localStorageKeyUser, user);
+  setUser: (user: object) => {
+    localStorage.setItem(localStorageKeyUser, JSON.stringify(user));
   },
 };
 

@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { TypographyP } from "@/components/ui/typography";
+import { useToast } from "@/hooks/use-toast";
+import { fetchHeaders } from "@/lib/config";
+import localdata from "@/lib/localdata";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { DetailedHTMLProps, HTMLAttributes } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +31,8 @@ export default function LoginForm({
   className,
   ...props
 }: DetailedHTMLProps<HTMLAttributes<HTMLFormElement>, HTMLFormElement>) {
+  const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,9 +41,25 @@ export default function LoginForm({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    alert("//TODO");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const user = await fetch(
+      process.env.NEXT_PUBLIC_BACKEND_URL + "/users/login",
+      {
+        method: "POST",
+        body: JSON.stringify(values),
+        headers: fetchHeaders,
+      }
+    ).then((res) => res.json());
+
+    if (!!user.error) {
+      toast({
+        title: user.message,
+        className: "text-destructive",
+      });
+    } else {
+      localdata.setUser(user);
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -79,7 +101,14 @@ export default function LoginForm({
             <Link href="/signup">SignUp</Link>
           </Button>
         </TypographyP>
-        <Button type="submit">Login</Button>
+        <Button
+          type="submit"
+          onMouseOver={() => {
+            router.prefetch("/dashboard");
+          }}
+        >
+          Login
+        </Button>
       </form>
     </Form>
   );
