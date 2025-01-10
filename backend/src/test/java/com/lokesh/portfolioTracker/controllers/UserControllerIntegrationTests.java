@@ -39,7 +39,7 @@ public class UserControllerIntegrationTests {
         String userJson = objectMapper.writeValueAsString(testUserA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post("/users/signin")
+                MockMvcRequestBuilders.post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -52,7 +52,7 @@ public class UserControllerIntegrationTests {
         String userJson = objectMapper.writeValueAsString(testUserA);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.post("/users/signin")
+                MockMvcRequestBuilders.post("/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(
@@ -60,9 +60,11 @@ public class UserControllerIntegrationTests {
                 .andExpect(
                         MockMvcResultMatchers.jsonPath("$.name").value(testUserA.getName()))
                 .andExpect(
-                        MockMvcResultMatchers.jsonPath("$.username").value(testUserA.getUsername()))
+                        MockMvcResultMatchers.jsonPath("$.username")
+                                .value(testUserA.getUsername()))
                 .andExpect(
-                        MockMvcResultMatchers.jsonPath("$.password").value(testUserA.getPassword()));
+                        MockMvcResultMatchers.jsonPath("$.password")
+                                .value(testUserA.getPassword()));
     }
 
 }
