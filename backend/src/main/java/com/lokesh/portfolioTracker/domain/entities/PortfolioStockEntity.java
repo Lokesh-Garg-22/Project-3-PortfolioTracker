@@ -3,8 +3,6 @@ package com.lokesh.portfolioTracker.domain.entities;
 import lombok.Data;
 import lombok.Builder;
 
-import com.lokesh.portfolioTracker.domain.dto.StockDto;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

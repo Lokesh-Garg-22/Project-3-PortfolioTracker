@@ -1,8 +1,8 @@
 package com.lokesh.portfolioTracker.services.impl;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -20,8 +20,14 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public StockEntity createStock(StockEntity stockEntity) {
+    public StockEntity createUpdateStock(Long id, StockEntity stockEntity) {
+        stockEntity.setId(id);
         return stockRepository.save(stockEntity);
+    }
+
+    @Override
+    public Optional<StockEntity> findStock(String symbol) {
+        return Optional.ofNullable(stockRepository.findBySymbol(symbol).get(0));
     }
 
     @Override

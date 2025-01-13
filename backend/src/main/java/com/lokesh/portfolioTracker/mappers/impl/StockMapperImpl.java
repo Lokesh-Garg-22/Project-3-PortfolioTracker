@@ -6,11 +6,11 @@ import com.lokesh.portfolioTracker.domain.dto.StockDto;
 import com.lokesh.portfolioTracker.domain.entities.StockEntity;
 import com.lokesh.portfolioTracker.mappers.Mapper;
 
-public class StockMapper implements Mapper<StockEntity, StockDto> {
+public class StockMapperImpl implements Mapper<StockEntity, StockDto> {
 
     private ModelMapper modelMapper;
 
-    public StockMapper(ModelMapper modelMapper) {
+    public StockMapperImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
