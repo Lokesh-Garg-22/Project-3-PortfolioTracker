@@ -26,10 +26,10 @@ const formSchema = z.object({
 
 export default function UpdateStockForm({
   className,
-  stockId,
+  id,
   ...props
 }: DetailedHTMLProps<HTMLAttributes<HTMLFormElement>, HTMLFormElement> & {
-  stockId?: string | undefined;
+  id?: string | undefined;
 }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({

@@ -1,5 +1,6 @@
 import Footer from "@/components/global/footer/Footer";
 import Navbar from "@/components/global/navbar/Navbar";
+import UpdateDarkMode from "@/utils/UpdateDarkMode";
 import UpdateStock from "@/views/UpdateStock";
 
 export default async function Page({
@@ -7,15 +8,16 @@ export default async function Page({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const stockId =
-    typeof (await searchParams).stockId == "string"
-      ? ((await searchParams).stockId as string)
+  const id =
+    typeof (await searchParams).id == "string"
+      ? ((await searchParams).id as string)
       : undefined;
 
   return (
     <>
+      <UpdateDarkMode />
       <Navbar />
-      <UpdateStock stockId={stockId} />
+      <UpdateStock id={id} />
       <Footer />
     </>
   );

@@ -1,5 +1,6 @@
 import Footer from "@/components/global/footer/Footer";
 import Navbar from "@/components/global/navbar/Navbar";
+import UpdateDarkMode from "@/utils/UpdateDarkMode";
 import AddStock from "@/views/AddStock";
 
 export default async function Page({
@@ -14,6 +15,7 @@ export default async function Page({
 
   return (
     <>
+      <UpdateDarkMode />
       <Navbar />
       <AddStock fallbackUrl={fallback} />
       <Footer />

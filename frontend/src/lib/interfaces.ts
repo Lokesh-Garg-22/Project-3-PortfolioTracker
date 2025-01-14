@@ -1,8 +1,17 @@
 export interface stock {
   id: number;
-  lastUpdated: string;
   name: string;
   price: number;
+  symbol: string;
+}
+
+export interface portfolioStock {
+  id: number;
+  stockId: number;
+  userId: number;
+  name: string;
+  price: number;
+  quantity: number;
   symbol: string;
 }
 

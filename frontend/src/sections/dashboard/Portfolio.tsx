@@ -1,4 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -9,24 +12,51 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH2 } from "@/components/ui/typography";
+import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
+import { portfolioStock } from "@/lib/interfaces";
+import localdata from "@/lib/localdata";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Portfolio() {
-  const stocks = [
-    { symbol: "NIFTY", stock: "Nifity50", quantity: 5, value: 50 },
-    { symbol: "MSFT", stock: "Microsoft", quantity: 2, value: 421.58 },
-    {
-      symbol: "META",
-      stock: "Meta Platforms (Facebook)",
-      quantity: 1,
-      value: 607.27,
-    },
-  ];
-  let total = 0;
-  stocks.forEach((ele) => {
-    total += ele.quantity * ele.value;
-  });
+  const [stocks, setStocks] = useState<portfolioStock[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let total = 0;
+    stocks.forEach((ele) => {
+      total += ele.quantity * ele.price;
+    });
+    setTotal(total);
+  }, [stocks]);
+
+  useEffect(() => {
+    if (typeof window != "undefined") {
+      fetch(fetchBackendUrl + "/portfolio", {
+        method: "POST",
+        headers: fetchHeaders,
+        body: JSON.stringify(localdata.getUser()),
+      })
+        .then((res) => res.json())
+        .then((res: Array<any>) => {
+          const data: portfolioStock[] = res.map((ele) => {
+            return {
+              symbol: ele.stock.symbol,
+              name: ele.stock.name,
+              quantity: ele.quantity,
+              price: ele.stock.price,
+              id: ele.id,
+              stockId: ele.stock.id,
+              userId: ele.user.id,
+            };
+          });
+          setStocks(data);
+          setLoading(false);
+        });
+    }
+  }, []);
 
   return (
     <section className="m-8">
@@ -43,22 +73,34 @@ export default function Portfolio() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {stocks.map((ele, id) => (
-              <TableRow key={id}>
-                <TableCell className="font-medium">{ele.symbol}</TableCell>
-                <TableCell className="capitalize">{ele.stock}</TableCell>
-                <TableCell>{ele.quantity}</TableCell>
-                <TableCell>${ele.value}</TableCell>
-                <TableCell className="text-right">
-                  ${ele.value * ele.quantity}
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading ? (
+              <PortfolioSkeleton />
+            ) : (
+              stocks.map((ele, id) => (
+                <TableRow key={id}>
+                  <TableCell className="font-medium">{ele.symbol}</TableCell>
+                  <TableCell className="capitalize">{ele.name}</TableCell>
+                  <TableCell>{ele.quantity}</TableCell>
+                  <TableCell>${ele.price}</TableCell>
+                  <TableCell className="text-right">
+                    ${ele.price * ele.quantity}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={4}>Total</TableCell>
-              <TableCell className="text-right">${total.toFixed(3)}</TableCell>
+              {loading ? (
+                <TableCell className="text-right">
+                  <Skeleton className="w-full h-6" />
+                </TableCell>
+              ) : (
+                <TableCell className="text-right">
+                  ${total.toFixed(3)}
+                </TableCell>
+              )}
             </TableRow>
           </TableFooter>
         </Table>
@@ -74,5 +116,19 @@ export default function Portfolio() {
         </Button>
       </div>
     </section>
+  );
+}
+
+function PortfolioSkeleton() {
+  return (
+    <>
+      {[...Array(5)].map((_, id) => (
+        <TableRow key={id}>
+          <TableCell colSpan={10} className="p-2">
+            <Skeleton className="w-full h-6" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
   );
 }

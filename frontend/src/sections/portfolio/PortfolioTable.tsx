@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   TableHeader,
   TableRow,
@@ -19,37 +20,51 @@ import {
   TableFooter,
   Table,
 } from "@/components/ui/table";
+import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
+import { portfolioStock } from "@/lib/interfaces";
+import localdata from "@/lib/localdata";
 import { PlusIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function PortfolioTable() {
-  const stocks = [
-    {
-      stockId: 937,
-      symbol: "NIFTY",
-      stock: "Nifity50",
-      quantity: 5,
-      value: 50,
-    },
-    {
-      stockId: 937,
-      symbol: "MSFT",
-      stock: "Microsoft",
-      quantity: 2,
-      value: 421.58,
-    },
-    {
-      stockId: 937,
-      symbol: "META",
-      stock: "Meta Platforms (Facebook)",
-      quantity: 1,
-      value: 607.27,
-    },
-  ];
-  let total = 0;
-  stocks.forEach((ele) => {
-    total += ele.quantity * ele.value;
-  });
+  const [stocks, setStocks] = useState<portfolioStock[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let total = 0;
+    stocks.forEach((ele) => {
+      total += ele.quantity * ele.price;
+    });
+    setTotal(total);
+  }, [stocks]);
+
+  useEffect(() => {
+    if (typeof window != "undefined") {
+      fetch(fetchBackendUrl + "/portfolio", {
+        method: "POST",
+        headers: fetchHeaders,
+        body: JSON.stringify(localdata.getUser()),
+      })
+        .then((res) => res.json())
+        .then((res: Array<any>) => {
+          const data: portfolioStock[] = res.map((ele) => {
+            return {
+              symbol: ele.stock.symbol,
+              name: ele.stock.name,
+              quantity: ele.quantity,
+              price: ele.stock.price,
+              id: ele.id,
+              stockId: ele.stock.id,
+              userId: ele.user.id,
+            };
+          });
+          setStocks(data);
+          setLoading(false);
+        });
+    }
+  }, []);
 
   return (
     <section className="p-8">
@@ -66,54 +81,70 @@ export default function PortfolioTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {stocks.map((ele, id) => (
-              <TableRow key={id}>
-                <TableCell className="font-medium">{ele.symbol}</TableCell>
-                <TableCell className="capitalize">{ele.stock}</TableCell>
-                <TableCell>{ele.quantity}</TableCell>
-                <TableCell>${ele.value}</TableCell>
-                <TableCell className="text-right">
-                  ${ele.value * ele.quantity}
-                </TableCell>
-                <TableCell className="text-right gap-2 flex justify-end">
-                  <Button asChild size="sm" className="px-2" variant="outline">
-                    <Link href={`/updateStock?stockId=${ele.stockId}`}>
-                      <SettingsIcon />
-                    </Link>
-                  </Button>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="px-2" variant="destructive">
-                        <Trash2Icon />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Are you absolutely sure?</DialogTitle>
-                        <DialogDescription>
-                          This action cannot be undone. This will remove the{" "}
-                          <b>{ele.stock}</b> stock from your portfolio.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
+            {loading ? (
+              <PortfolioTableSkeleton />
+            ) : (
+              stocks.map((ele, id) => (
+                <TableRow key={id}>
+                  <TableCell className="font-medium">{ele.symbol}</TableCell>
+                  <TableCell className="capitalize">{ele.name}</TableCell>
+                  <TableCell>{ele.quantity}</TableCell>
+                  <TableCell>${ele.price}</TableCell>
+                  <TableCell className="text-right">
+                    ${ele.price * ele.quantity}
+                  </TableCell>
+                  <TableCell className="text-right gap-2 flex justify-end">
+                    <Button
+                      asChild
+                      size="sm"
+                      className="px-2"
+                      variant="outline"
+                    >
+                      <Link href={`/updateStock?id=${ele.id}`}>
+                        <SettingsIcon />
+                      </Link>
+                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
                         <Button
+                          size="sm"
+                          className="px-2"
                           variant="destructive"
-                          onClick={() => {
-                            alert("//TODO");
-                          }}
                         >
-                          Delete
+                          <Trash2Icon />
                         </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-              </TableRow>
-            ))}
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Are you absolutely sure?</DialogTitle>
+                          <DialogDescription>
+                            This action cannot be undone. This will remove the{" "}
+                            <b>{ele.name}</b> stock from your portfolio.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button
+                            variant="destructive"
+                            onClick={() => {
+                              // setStocks((stocks) =>
+                              //   stocks.filter((e) => ele.id != e.id)
+                              // );
+                              alert("//TODO");
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
             <TableRow>
               <TableCell colSpan={6} className="text-center">
                 <Button asChild size="sm" className="px-2" variant="outline">
-                  <Link href="/addStock">
+                  <Link href="/addStock?fallback=/portfolio">
                     <PlusIcon /> Add Stock
                   </Link>
                 </Button>
@@ -123,12 +154,34 @@ export default function PortfolioTable() {
           <TableFooter>
             <TableRow>
               <TableCell colSpan={4}>Total</TableCell>
-              <TableCell className="text-right">${total.toFixed(3)}</TableCell>
+              {loading ? (
+                <TableCell className="text-right">
+                  <Skeleton className="w-full h-6" />
+                </TableCell>
+              ) : (
+                <TableCell className="text-right">
+                  ${total.toFixed(3)}
+                </TableCell>
+              )}
               <TableCell className="text-right"></TableCell>
             </TableRow>
           </TableFooter>
         </Table>
       </div>
     </section>
+  );
+}
+
+function PortfolioTableSkeleton() {
+  return (
+    <>
+      {[...Array(5)].map((_, id) => (
+        <TableRow key={id}>
+          <TableCell colSpan={10}>
+            <Skeleton className="w-full h-12" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
   );
 }

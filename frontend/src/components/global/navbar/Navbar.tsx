@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { TypographyH1 } from "@/components/ui/typography";
+import localdata from "@/lib/localdata";
 import { MoonIcon, SunIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -11,7 +12,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (typeof window != "undefined") {
-      setDarkMode(localStorage.them == "dark");
+      setDarkMode(localdata.getTheme() == "dark");
     }
   });
 
@@ -35,10 +36,10 @@ export default function Navbar() {
                 size="icon"
                 onClick={() => {
                   setDarkMode(false);
-                  localStorage.setItem("them", "light");
+                  localdata.setTheme("light");
                   document.body.classList.toggle(
                     "dark",
-                    localStorage.them == "dark"
+                    localdata.getTheme() == "dark"
                   );
                 }}
               >
@@ -50,10 +51,10 @@ export default function Navbar() {
                 size="icon"
                 onClick={() => {
                   setDarkMode(true);
-                  localStorage.setItem("them", "dark");
+                  localdata.setTheme("dark");
                   document.body.classList.toggle(
                     "dark",
-                    localStorage.them == "dark"
+                    localdata.getTheme() == "dark"
                   );
                 }}
               >
