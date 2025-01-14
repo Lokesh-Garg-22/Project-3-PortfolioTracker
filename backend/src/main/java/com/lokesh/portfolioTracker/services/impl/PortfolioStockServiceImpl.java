@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.lokesh.portfolioTracker.domain.entities.PortfolioStockEntity;
+import com.lokesh.portfolioTracker.domain.entities.UserEntity;
 import com.lokesh.portfolioTracker.repositories.PortfolioStockRepository;
 import com.lokesh.portfolioTracker.services.PortfolioStockService;
 
@@ -28,6 +29,15 @@ public class PortfolioStockServiceImpl implements PortfolioStockService {
     public List<PortfolioStockEntity> portfolioStocks() {
         List<PortfolioStockEntity> response = new LinkedList<>();
         for (PortfolioStockEntity entity : portfolioStockRepository.findAll()) {
+            response.add(entity);
+        }
+        return response;
+    }
+
+    @Override
+    public List<PortfolioStockEntity> portfolioStocks(UserEntity userEntity) {
+        List<PortfolioStockEntity> response = new LinkedList<>();
+        for (PortfolioStockEntity entity : portfolioStockRepository.findByUser(userEntity)) {
             response.add(entity);
         }
         return response;

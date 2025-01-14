@@ -1,5 +1,7 @@
 package com.lokesh.portfolioTracker.controllers;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import com.lokesh.portfolioTracker.services.UserService;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @RestController
 public class PortfolioStockController {
@@ -52,14 +55,56 @@ public class PortfolioStockController {
 
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class addStockRequest {
+    private static class AddStockRequest {
         public UserDto user;
         public StockDto stock;
         public Number quantity;
     }
 
+    @PostMapping(path = "/portfolio")
+    public List<PortfolioStockDto> userPortfolio(@RequestBody UserDto userDto) {
+        UserEntity userEntity = userMapper.mapFrom(userDto);
+
+        userEntity = userService.checkAuthentication(userEntity);
+
+        List<PortfolioStockDto> portfolioStockDtos = new LinkedList<>();
+        for (PortfolioStockEntity portfolioStockEntity : portfolioStockService.portfolioStocks(userEntity)) {
+            portfolioStockDtos.add(portfolioStockMapper.mapTo(portfolioStockEntity));
+        }
+
+        return portfolioStockDtos;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserPortfolioStats {
+        public Number quantity;
+        public Number avarageValue;
+        public Number totalValue;
+    }
+
+    @PostMapping(path = "/portfolio/stats")
+    public UserPortfolioStats userPortfolioStats(@RequestBody UserDto userDto) {
+        UserEntity userEntity = userMapper.mapFrom(userDto);
+
+        userEntity = userService.checkAuthentication(userEntity);
+
+        UserPortfolioStats userPortfolioStats = new UserPortfolioStats(0, 0, 0);
+        for (PortfolioStockEntity portfolioStockEntity : portfolioStockService.portfolioStocks(userEntity)) {
+            userPortfolioStats.quantity = userPortfolioStats.quantity.longValue()
+                    + portfolioStockEntity.getQuantity().longValue();
+            userPortfolioStats.totalValue = userPortfolioStats.totalValue.floatValue()
+                    + (portfolioStockEntity.getQuantity().floatValue()
+                            * portfolioStockEntity.getStock().getPrice().floatValue());
+        }
+        userPortfolioStats.avarageValue = userPortfolioStats.totalValue.floatValue()
+                / userPortfolioStats.quantity.longValue();
+
+        return userPortfolioStats;
+    }
+
     @PostMapping(path = "/portfolio/stock/add")
-    public PortfolioStockDto addStock(@RequestBody addStockRequest request) {
+    public PortfolioStockDto addStock(@RequestBody AddStockRequest request) {
         UserEntity userEntity = userMapper.mapFrom(request.user);
         StockEntity stockEntity = stockMapper.mapFrom(request.stock);
 
