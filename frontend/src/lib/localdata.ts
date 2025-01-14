@@ -1,9 +1,11 @@
+import { user } from "./interfaces";
+
 const localStorageKeyUser = "user";
 const localdata = {
-  getUser: () => {
+  getUser: (): user => {
     return JSON.parse(localStorage.getItem(localStorageKeyUser) || "");
   },
-  setUser: (user: object) => {
+  setUser: (user: user) => {
     localStorage.setItem(localStorageKeyUser, JSON.stringify(user));
   },
 };

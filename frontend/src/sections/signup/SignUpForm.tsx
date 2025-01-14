@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/hooks/use-toast";
-import { fetchHeaders } from "@/lib/config";
+import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
 import localdata from "@/lib/localdata";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,14 +59,11 @@ export default function SignUpForm({
       password: values.password,
     };
 
-    const user = await fetch(
-      process.env.NEXT_PUBLIC_BACKEND_URL + "/users/signup",
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: fetchHeaders,
-      }
-    ).then((res) => res.json());
+    const user = await fetch(fetchBackendUrl + "/users/signup", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: fetchHeaders,
+    }).then((res) => res.json());
 
     if (!!user.error) {
       toast({
