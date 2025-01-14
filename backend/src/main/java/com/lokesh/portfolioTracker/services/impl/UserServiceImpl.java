@@ -55,13 +55,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity checkAuthentication(UserEntity userEntity) {
-        ResponseStatusException exception = new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         Optional<UserEntity> response = userRepository.findById(userEntity.getId());
         if (response.isEmpty())
-            throw exception;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User Not Found");
         UserEntity user = response.get();
-        if (user.getPassword() != userEntity.getPassword() || user.getUsername() != userEntity.getUsername())
-            throw exception;
+        if (!user.getUsername().equals(userEntity.getUsername()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong User Id!");
+        if (!user.getPassword().equals(userEntity.getPassword()))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong Password!");
         return user;
     }
 }

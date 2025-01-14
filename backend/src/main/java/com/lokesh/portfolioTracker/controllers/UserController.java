@@ -30,7 +30,7 @@ public class UserController {
         if (userService.userExists(userEntity.getUsername()))
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "User Allready Exists!");
+                    "User allready exists!");
         UserEntity savedUserEntity = userService.createUser(userEntity);
         return new ResponseEntity<>(userMapper.mapTo(savedUserEntity), HttpStatus.CREATED);
     }

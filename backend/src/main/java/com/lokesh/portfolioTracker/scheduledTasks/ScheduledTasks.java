@@ -67,10 +67,10 @@ public class ScheduledTasks {
             }
         }
 
-        updateStocks();
+        // updateStocks();
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    // @Scheduled(cron = "0 0 0 * * *") // BUG
     public void updateStocks() {
         if (AlphaVantageKey.isEmpty())
             return;

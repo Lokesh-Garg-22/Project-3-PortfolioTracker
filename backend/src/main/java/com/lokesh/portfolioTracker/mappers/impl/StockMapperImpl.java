@@ -1,11 +1,13 @@
 package com.lokesh.portfolioTracker.mappers.impl;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import com.lokesh.portfolioTracker.domain.dto.StockDto;
 import com.lokesh.portfolioTracker.domain.entities.StockEntity;
 import com.lokesh.portfolioTracker.mappers.Mapper;
 
+@Component
 public class StockMapperImpl implements Mapper<StockEntity, StockDto> {
 
     private ModelMapper modelMapper;
