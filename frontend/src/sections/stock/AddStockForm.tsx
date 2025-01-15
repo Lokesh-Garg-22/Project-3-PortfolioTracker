@@ -26,7 +26,7 @@ import {
 import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/hooks/use-toast";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
-import { stock } from "@/lib/interfaces";
+import { Stock } from "@/lib/interfaces";
 import localdata from "@/lib/localdata";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,6 +53,7 @@ export default function AddStockForm({
 }) {
   const router = useRouter();
   const { toast } = useToast();
+  const [stocks, setStocks] = useState<Stock[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,7 +61,6 @@ export default function AddStockForm({
       quantity: "",
     },
   });
-  const [stocks, setStocks] = useState<stock[]>([]);
 
   useEffect(() => {
     fetch(fetchBackendUrl + "/stocks", {
@@ -233,9 +233,9 @@ export default function AddStockForm({
 }
 
 function StockDetails({
-  stock = { name: "", price: 0, symbol: "", id: 0, lastUpdated: "" },
+  stock = { name: "", price: 0, symbol: "", id: 0 },
 }: {
-  stock?: stock;
+  stock?: Stock;
 }) {
   return (
     <>

@@ -1,5 +1,6 @@
 import Footer from "@/components/global/footer/Footer";
 import Navbar from "@/components/global/navbar/Navbar";
+import CheckAuthentication from "@/utils/CheckAuthentication";
 import UpdateDarkMode from "@/utils/UpdateDarkMode";
 import AddStock from "@/views/AddStock";
 
@@ -15,6 +16,7 @@ export default async function Page({
 
   return (
     <>
+      <CheckAuthentication />
       <UpdateDarkMode />
       <Navbar />
       <AddStock fallbackUrl={fallback} />

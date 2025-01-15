@@ -12,15 +12,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH2 } from "@/components/ui/typography";
+import { useToast } from "@/hooks/use-toast";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
-import { portfolioStock } from "@/lib/interfaces";
+import { PortfolioStock } from "@/lib/interfaces";
 import localdata from "@/lib/localdata";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Portfolio() {
-  const [stocks, setStocks] = useState<portfolioStock[]>([]);
+  const { toast } = useToast();
+  const [stocks, setStocks] = useState<PortfolioStock[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -40,8 +42,15 @@ export default function Portfolio() {
         body: JSON.stringify(localdata.getUser()),
       })
         .then((res) => res.json())
-        .then((res: Array<any>) => {
-          const data: portfolioStock[] = res.map((ele) => {
+        .then((res: Array<any> | any) => {
+          if (res.error) {
+            toast({
+              title: res.message,
+              className: "text-destructive",
+            });
+            return;
+          }
+          const data: PortfolioStock[] = res.map((ele: any) => {
             return {
               symbol: ele.stock.symbol,
               name: ele.stock.name,

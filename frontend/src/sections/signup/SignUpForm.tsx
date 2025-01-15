@@ -72,7 +72,12 @@ export default function SignUpForm({
       });
     } else {
       localdata.setUser(user);
-      router.push("/dashboard");
+      setTimeout(() => {
+        toast({
+          title: "User created successfully",
+        });
+        router.push("/dashboard");
+      }, 2000);
     }
   }
 

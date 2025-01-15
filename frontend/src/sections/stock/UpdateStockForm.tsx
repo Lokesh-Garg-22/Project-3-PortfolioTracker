@@ -10,39 +10,102 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TypographyP } from "@/components/ui/typography";
+import { useToast } from "@/hooks/use-toast";
+import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
+import { PortfolioStock } from "@/lib/interfaces";
+import localdata from "@/lib/localdata";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DetailedHTMLProps, HTMLAttributes } from "react";
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  stock: z.string(),
   quantity: z.string(),
 });
 
 export default function UpdateStockForm({
   className,
   id,
+  fallbackDelay = 2000,
   ...props
 }: DetailedHTMLProps<HTMLAttributes<HTMLFormElement>, HTMLFormElement> & {
   id?: string | undefined;
+  fallbackDelay?: number;
 }) {
+  const { toast } = useToast();
   const router = useRouter();
+  const [stock, setStock] = useState<PortfolioStock>();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      stock: "",
       quantity: "",
     },
   });
 
+  useEffect(() => {
+    fetch(fetchBackendUrl + "/portfolio/stock", {
+      method: "POST",
+      headers: fetchHeaders,
+      body: JSON.stringify({ user: localdata.getUser(), id }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.error) {
+          toast({
+            title: res.message,
+            className: "text-destructive",
+          });
+          return;
+        }
+        setStock({
+          symbol: res.stock.symbol,
+          name: res.stock.name,
+          quantity: res.quantity,
+          price: res.stock.price,
+          id: res.id,
+          stockId: res.stock.id,
+          userId: res.user.id,
+        });
+        form.setValue("quantity", res.quantity);
+      });
+  }, []);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    alert("//TODO");
+    let quantity;
+    try {
+      quantity = parseInt(values.quantity as string);
+    } catch (e) {
+      form.setError("quantity", { message: "Enter a Number!" });
+      return;
+    }
+
+    fetch(fetchBackendUrl + "/portfolio/stock/update", {
+      method: "post",
+      headers: fetchHeaders,
+      body: JSON.stringify({
+        user: localdata.getUser(),
+        portfolioStock: { id, quantity },
+        id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.error) {
+          toast({
+            title: res.message,
+            className: "text-destructive",
+          });
+          return;
+        }
+        toast({
+          title: "Stock updated successfully",
+        });
+        setTimeout(() => {
+          router.push("/portfolio");
+        }, fallbackDelay);
+      });
   }
 
   return (
@@ -52,19 +115,24 @@ export default function UpdateStockForm({
         className={cn("space-y-8", className)}
         {...props}
       >
-        <FormField
-          control={form.control}
-          name="stock"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Select Stock</FormLabel>
-              <FormControl>
-                <Input placeholder="stock" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+          <FormLabel>Select Stock</FormLabel>
+          <FormControl>
+            <Input value={stock?.symbol || ""} disabled />
+          </FormControl>
+        </FormItem>
+        <FormItem>
+          <FormLabel>Select Name</FormLabel>
+          <FormControl>
+            <Input value={stock?.name || ""} disabled />
+          </FormControl>
+        </FormItem>
+        <FormItem>
+          <FormLabel>Select Price</FormLabel>
+          <FormControl>
+            <Input value={stock?.price || 0} disabled />
+          </FormControl>
+        </FormItem>
         <FormField
           control={form.control}
           name="quantity"
@@ -73,7 +141,7 @@ export default function UpdateStockForm({
               <FormLabel>Quantity</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="quantity"
+                  placeholder="Quantity"
                   type="number"
                   min={1}
                   {...field}

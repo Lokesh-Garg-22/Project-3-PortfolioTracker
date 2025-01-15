@@ -1,13 +1,18 @@
-import { user } from "./interfaces";
+import { User } from "./interfaces";
 
 const localStorageKeyUser = "user";
 const localStorageKeyTheme = "theme";
 const localdata = {
-  getUser: (): user => {
-    return JSON.parse(localStorage.getItem(localStorageKeyUser) || "");
+  getUser: (): User | null => {
+    if (localStorage.getItem(localStorageKeyUser))
+      return JSON.parse(localStorage.getItem(localStorageKeyUser) || "");
+    return null;
   },
-  setUser: (user: user) => {
+  setUser: (user: User) => {
     localStorage.setItem(localStorageKeyUser, JSON.stringify(user));
+  },
+  removeUser: () => {
+    localStorage.removeItem(localStorageKeyUser);
   },
   getTheme: () => {
     return localStorage.getItem(localStorageKeyTheme);

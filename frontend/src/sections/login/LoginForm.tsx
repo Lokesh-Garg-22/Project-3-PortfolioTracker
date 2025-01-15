@@ -55,7 +55,12 @@ export default function LoginForm({
       });
     } else {
       localdata.setUser(user);
-      router.push("/dashboard");
+      setTimeout(() => {
+        toast({
+          title: "Login successfully",
+        });
+        router.push("/dashboard");
+      }, 2000);
     }
   }
 

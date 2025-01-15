@@ -2,19 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import { TypographyH1 } from "@/components/ui/typography";
+import { User } from "@/lib/interfaces";
 import localdata from "@/lib/localdata";
 import { MoonIcon, SunIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     if (typeof window != "undefined") {
+      setUser(localdata.getUser());
       setDarkMode(localdata.getTheme() == "dark");
     }
-  });
+  }, []);
 
   return (
     <>
@@ -24,12 +29,26 @@ export default function Navbar() {
             <TypographyH1>Tracker</TypographyH1>
           </Link>
           <div className="flex gap-1">
-            <Button variant="outline" asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    localdata.removeUser();
+                    router.push("/");
+                  }}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+            )}
             {darkMode ? (
               <Button
                 variant="outline"

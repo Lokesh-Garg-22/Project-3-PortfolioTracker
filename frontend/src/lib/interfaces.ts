@@ -1,11 +1,11 @@
-export interface stock {
+export interface Stock {
   id: number;
   name: string;
   price: number;
   symbol: string;
 }
 
-export interface portfolioStock {
+export interface PortfolioStock {
   id: number;
   stockId: number;
   userId: number;
@@ -15,7 +15,7 @@ export interface portfolioStock {
   symbol: string;
 }
 
-export interface user {
+export interface User {
   id: number;
   name: string;
   password: string;

@@ -20,15 +20,18 @@ import {
   TableFooter,
   Table,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
-import { portfolioStock } from "@/lib/interfaces";
+import type { PortfolioStock, Stock } from "@/lib/interfaces";
 import localdata from "@/lib/localdata";
 import { PlusIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PortfolioTable() {
-  const [stocks, setStocks] = useState<portfolioStock[]>([]);
+  const { toast } = useToast();
+  const [stocks, setStocks] = useState<PortfolioStock[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -48,8 +51,15 @@ export default function PortfolioTable() {
         body: JSON.stringify(localdata.getUser()),
       })
         .then((res) => res.json())
-        .then((res: Array<any>) => {
-          const data: portfolioStock[] = res.map((ele) => {
+        .then((res: Array<any> | any) => {
+          if (res.error) {
+            toast({
+              title: res.message,
+              className: "text-destructive",
+            });
+            return;
+          }
+          const data: PortfolioStock[] = res.map((ele: any) => {
             return {
               symbol: ele.stock.symbol,
               name: ele.stock.name,
@@ -65,6 +75,29 @@ export default function PortfolioTable() {
         });
     }
   }, []);
+
+  function onClickDelete(stock: PortfolioStock) {
+    fetch(fetchBackendUrl + "/portfolio/stock/delete", {
+      method: "POST",
+      headers: fetchHeaders,
+      body: JSON.stringify({ user: localdata.getUser(), id: stock.id }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        if (res.error) {
+          toast({
+            title: res.message,
+            className: "text-destructive",
+          });
+          return;
+        }
+        toast({
+          title: "Stock deleted successfully",
+        });
+        setStocks((stocks) => stocks.filter((ele) => stock.id != ele.id));
+      });
+  }
 
   return (
     <section className="p-8">
@@ -126,10 +159,7 @@ export default function PortfolioTable() {
                           <Button
                             variant="destructive"
                             onClick={() => {
-                              // setStocks((stocks) =>
-                              //   stocks.filter((e) => ele.id != e.id)
-                              // );
-                              alert("//TODO");
+                              onClickDelete(ele);
                             }}
                           >
                             Delete
