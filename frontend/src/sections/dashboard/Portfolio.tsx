@@ -25,6 +25,17 @@ export default function Portfolio() {
   const [stocks, setStocks] = useState<PortfolioStock[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mobile, setMobile] = useState<boolean>();
+
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)");
+    const onChange = () => setMobile(!mql.matches);
+
+    mql.addEventListener("change", onChange);
+    setMobile(!mql.matches);
+
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => {
     let total = 0;
@@ -68,16 +79,16 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <section className="m-8">
+    <section className="m-2 sm:m-8">
       <TypographyH2>Portfolio</TypographyH2>
       <div className="my-4 border-2 flex flex-col rounded bg-background">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Symbol</TableHead>
-              <TableHead>Stock</TableHead>
+              {!mobile && <TableHead>Stock</TableHead>}
               <TableHead>Quantity</TableHead>
-              <TableHead>Value Per Stock</TableHead>
+              {!mobile && <TableHead>Value Per Stock</TableHead>}
               <TableHead className="text-right">Amount</TableHead>
             </TableRow>
           </TableHeader>
@@ -88,9 +99,9 @@ export default function Portfolio() {
               stocks.map((ele, id) => (
                 <TableRow key={id}>
                   <TableCell className="font-medium">{ele.symbol}</TableCell>
-                  <TableCell className="capitalize">{ele.name}</TableCell>
+                  {!mobile && <TableCell>{ele.name}</TableCell>}
                   <TableCell>{ele.quantity}</TableCell>
-                  <TableCell>${ele.price}</TableCell>
+                  {!mobile && <TableCell>${ele.price}</TableCell>}
                   <TableCell className="text-right">
                     ${ele.price * ele.quantity}
                   </TableCell>
@@ -100,7 +111,11 @@ export default function Portfolio() {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={4}>Total</TableCell>
+              {mobile ? (
+                <TableCell colSpan={2}>Total</TableCell>
+              ) : (
+                <TableCell colSpan={4}>Total</TableCell>
+              )}
               {loading ? (
                 <TableCell className="text-right">
                   <Skeleton className="w-full h-6" />
@@ -114,7 +129,7 @@ export default function Portfolio() {
           </TableFooter>
         </Table>
       </div>
-      <div className="flex gap-4">
+      <div className="flex sm:flex-row flex-col gap-x-4 gap-y-2">
         <Button asChild>
           <Link href="/addStock">
             <PlusIcon /> Add Stock

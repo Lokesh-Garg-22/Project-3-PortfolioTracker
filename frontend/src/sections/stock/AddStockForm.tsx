@@ -121,7 +121,7 @@ export default function AddStockForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("space-y-8", className)}
+        className={cn("space-y-4 sm:space-y-8", className)}
         {...props}
       >
         <FormField

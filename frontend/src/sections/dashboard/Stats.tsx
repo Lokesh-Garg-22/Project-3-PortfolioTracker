@@ -4,7 +4,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TypographyH3, TypographyH2 } from "@/components/ui/typography";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
 import localdata from "@/lib/localdata";
-import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 export default function Stats() {
   const [stats, setStats] = useState<{
@@ -29,51 +36,59 @@ export default function Stats() {
     }
   }, []);
 
+  function StatComponent({
+    className,
+    label,
+    value,
+    ...props
+  }: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
+    label: string | ReactNode;
+    value: string | number | ReactNode;
+  }) {
+    return loading ? (
+      <Skeleton className="max-w-60 w-full min-h-20 sm:min-h-40 grow m-2" />
+    ) : (
+      <div
+        className={cn(
+          "max-w-60 w-full grow m-2 p-2 sm:p-4 border-2 rounded-lg text-center bg-background",
+          className
+        )}
+        {...props}
+      >
+        <TypographyH3 className="border-0 sm:min-h-16 max-sm:text-xl">
+          {label}
+        </TypographyH3>
+        <div className="border my-2" />
+        <TypographyH2 className="border-0 p-0 max-sm:text-2xl">
+          {value}
+        </TypographyH2>
+      </div>
+    );
+  }
+
   return (
-    <section className="p-8 flex justify-around">
-      {loading ? (
-        <Skeleton className="max-w-60 min-h-40 grow" />
-      ) : (
-        <div className="max-w-60 grow p-4 border-2 rounded-lg text-center bg-background">
-          <TypographyH3 className="border-0 min-h-16">
-            Total Stocks
-          </TypographyH3>
-          <div className="border my-2" />
-          <TypographyH2 className="border-0 p-0">
-            {stats?.quantity}
-          </TypographyH2>
-        </div>
-      )}
-      {loading ? (
-        <Skeleton className="max-w-60 min-h-40 grow" />
-      ) : (
-        <div className="max-w-60 grow p-4 border-2 rounded-lg text-center bg-background">
-          <TypographyH3 className="border-0 min-h-16">
+    <section className="p-4 sm:p-8 flex flex-col sm:flex-row justify-around items-center">
+      <StatComponent label={"Total Stocks"} value={stats?.quantity} />
+      <StatComponent
+        label={
+          <>
             Avarage Value
             <br />
             Per Stock
-          </TypographyH3>
-          <div className="border my-2" />
-          <TypographyH2 className="border-0 p-0">
-            ${stats?.avarageValue.toFixed(3)}
-          </TypographyH2>
-        </div>
-      )}
-      {loading ? (
-        <Skeleton className="max-w-60 min-h-40 grow" />
-      ) : (
-        <div className="max-w-60 grow p-4 border-2 rounded-lg text-center bg-background">
-          <TypographyH3 className="border-0 min-h-16">
+          </>
+        }
+        value={<>${stats?.avarageValue.toFixed(3)}</>}
+      />
+      <StatComponent
+        label={
+          <>
             Total Value
             <br />
             of Stocks
-          </TypographyH3>
-          <div className="border my-2" />
-          <TypographyH2 className="border-0 p-0">
-            ${stats?.totalValue.toFixed(3)}
-          </TypographyH2>
-        </div>
-      )}
+          </>
+        }
+        value={<>${stats?.totalValue.toFixed(3)}</>}
+      />
     </section>
   );
 }
