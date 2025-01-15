@@ -68,6 +68,7 @@ public class PortfolioStockController {
     @AllArgsConstructor
     private static class UserPortfolioStats {
         public Number quantity;
+        @SuppressWarnings("unused")
         public Number avarageValue;
         public Number totalValue;
     }
@@ -85,8 +86,9 @@ public class PortfolioStockController {
                     + (portfolioStockEntity.getQuantity().floatValue()
                             * portfolioStockEntity.getStock().getPrice().floatValue());
         }
-        userPortfolioStats.avarageValue = userPortfolioStats.totalValue.floatValue()
-                / userPortfolioStats.quantity.longValue();
+        if (userPortfolioStats.quantity.longValue() != 0)
+            userPortfolioStats.avarageValue = userPortfolioStats.totalValue.floatValue()
+                    / userPortfolioStats.quantity.longValue();
 
         return userPortfolioStats;
     }
@@ -109,8 +111,6 @@ public class PortfolioStockController {
         if (optionalPortfolioStock.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock not found");
         }
-
-        System.out.println(optionalPortfolioStock);
 
         return portfolioStockMapper.mapTo(optionalPortfolioStock.get());
     }

@@ -1,5 +1,6 @@
 package com.lokesh.portfolioTracker;
 
+import com.lokesh.portfolioTracker.domain.entities.PortfolioStockEntity;
 import com.lokesh.portfolioTracker.domain.entities.StockEntity;
 import com.lokesh.portfolioTracker.domain.entities.UserEntity;
 
@@ -31,10 +32,23 @@ public final class TestDataUtil {
                 .build();
     }
 
-    public static StockEntity createTestStockEntity() {
+    public static StockEntity createTestStockEntityA() {
         return StockEntity.builder()
-                .name("Stock")
+                .name("Stock 1")
                 .symbol("STK")
+                .build();
+    }
+
+    public static StockEntity createTestStockEntityB() {
+        return StockEntity.builder()
+                .name("Stock 2")
+                .symbol("HTE")
+                .build();
+    }
+
+    public static PortfolioStockEntity createTestPortfolioStockEntity() {
+        return PortfolioStockEntity.builder()
+                .Quantity(2)
                 .build();
     }
 

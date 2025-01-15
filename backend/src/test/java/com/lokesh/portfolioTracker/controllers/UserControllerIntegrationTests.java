@@ -35,7 +35,6 @@ public class UserControllerIntegrationTests {
     @Test
     public void testThatCreateUserSuccessfullyReturnedHttp201Created() throws Exception {
         UserEntity testUserA = TestDataUtil.createTestUserA();
-        testUserA.setId(null);
         String userJson = objectMapper.writeValueAsString(testUserA);
 
         mockMvc.perform(
@@ -48,7 +47,6 @@ public class UserControllerIntegrationTests {
     @Test
     public void testThatCreateUserSuccessfullyReturnsSavedUser() throws Exception {
         UserEntity testUserA = TestDataUtil.createTestUserA();
-        testUserA.setId(null);
         String userJson = objectMapper.writeValueAsString(testUserA);
 
         mockMvc.perform(

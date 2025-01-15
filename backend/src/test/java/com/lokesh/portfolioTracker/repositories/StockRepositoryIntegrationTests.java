@@ -30,7 +30,7 @@ public class StockRepositoryIntegrationTests {
     @Test
     @Transactional
     public void testThatStockCanBeCreatedAndRecalled() {
-        StockEntity stock = TestDataUtil.createTestStockEntity();
+        StockEntity stock = TestDataUtil.createTestStockEntityA();
         underTest.save(stock);
 
         Optional<StockEntity> result = underTest.findById(stock.getId());
@@ -41,7 +41,7 @@ public class StockRepositoryIntegrationTests {
     @Test
     @Transactional
     public void testThatStockCanBeUpdated() {
-        StockEntity stock = TestDataUtil.createTestStockEntity();
+        StockEntity stock = TestDataUtil.createTestStockEntityA();
         underTest.save(stock);
 
         stock.setName("Stock Updated");
@@ -54,7 +54,7 @@ public class StockRepositoryIntegrationTests {
     @Test
     @Transactional
     public void testThatStockCanBeDeleted() {
-        StockEntity stock = TestDataUtil.createTestStockEntity();
+        StockEntity stock = TestDataUtil.createTestStockEntityA();
         underTest.save(stock);
         underTest.deleteById(stock.getId());
         Optional<StockEntity> result = underTest.findById(stock.getId());
