@@ -27,11 +27,11 @@ public class PortfolioStockEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "portfolioStock_id_seq")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "stockId")
     private StockEntity stock;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "userId")
     private UserEntity user;
 

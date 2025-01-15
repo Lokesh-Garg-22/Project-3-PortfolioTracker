@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,7 +23,6 @@ import com.lokesh.portfolioTracker.services.UserService;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @RestController
 public class PortfolioStockController {
@@ -53,18 +51,9 @@ public class PortfolioStockController {
         this.userMapper = userMapper;
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class AddStockRequest {
-        public UserDto user;
-        public StockDto stock;
-        public Number quantity;
-    }
-
     @PostMapping(path = "/portfolio")
     public List<PortfolioStockDto> userPortfolio(@RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapFrom(userDto);
-
         userEntity = userService.checkAuthentication(userEntity);
 
         List<PortfolioStockDto> portfolioStockDtos = new LinkedList<>();
@@ -86,7 +75,6 @@ public class PortfolioStockController {
     @PostMapping(path = "/portfolio/stats")
     public UserPortfolioStats userPortfolioStats(@RequestBody UserDto userDto) {
         UserEntity userEntity = userMapper.mapFrom(userDto);
-
         userEntity = userService.checkAuthentication(userEntity);
 
         UserPortfolioStats userPortfolioStats = new UserPortfolioStats(0, 0, 0);
@@ -103,13 +91,44 @@ public class PortfolioStockController {
         return userPortfolioStats;
     }
 
-    @PostMapping(path = "/portfolio/stock/add")
-    public PortfolioStockDto addStock(@RequestBody AddStockRequest request) {
-        UserEntity userEntity = userMapper.mapFrom(request.user);
-        StockEntity stockEntity = stockMapper.mapFrom(request.stock);
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class PortfolioStockRequest {
+        public UserDto user;
+        public Number id;
+    }
 
+    @PostMapping(path = "/portfolio/stock")
+    public PortfolioStockDto portfolioStock(@RequestBody PortfolioStockRequest requestBody) {
+        UserEntity userEntity = userMapper.mapFrom(requestBody.user);
         userEntity = userService.checkAuthentication(userEntity);
 
+        Optional<PortfolioStockEntity> optionalPortfolioStock = portfolioStockService
+                .portfolioStock(requestBody.id.longValue());
+
+        if (optionalPortfolioStock.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock not found");
+        }
+
+        System.out.println(optionalPortfolioStock);
+
+        return portfolioStockMapper.mapTo(optionalPortfolioStock.get());
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class AddStockRequest {
+        public UserDto user;
+        public StockDto stock;
+        public Number quantity;
+    }
+
+    @PostMapping(path = "/portfolio/stock/add")
+    public PortfolioStockDto addPortfolioStock(@RequestBody AddStockRequest requestBody) {
+        UserEntity userEntity = userMapper.mapFrom(requestBody.user);
+        userEntity = userService.checkAuthentication(userEntity);
+
+        StockEntity stockEntity = stockMapper.mapFrom(requestBody.stock);
         Optional<StockEntity> findStockEntity = stockService.findStock(stockEntity.getSymbol());
         if (findStockEntity.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock does not exist");
@@ -119,14 +138,75 @@ public class PortfolioStockController {
         PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.builder()
                 .stock(stockEntity)
                 .user(userEntity)
-                .Quantity(request.quantity)
+                .Quantity(requestBody.quantity)
                 .build();
+
+        System.out.println(portfolioStockEntity);
 
         portfolioStockEntity = portfolioStockService.createUpdatePortfolioStock(
                 portfolioStockEntity.getId(),
                 portfolioStockEntity);
 
         return portfolioStockMapper.mapTo(portfolioStockEntity);
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UpdatePortfolioStockRequest {
+        public UserDto user;
+        public PortfolioStockDto portfolioStock;
+        public Number id;
+    }
+
+    @PostMapping(path = "/portfolio/stock/update")
+    public PortfolioStockDto updatePortfolioStock(@RequestBody UpdatePortfolioStockRequest requestBody) {
+        UserEntity userEntity = userMapper.mapFrom(requestBody.user);
+        userEntity = userService.checkAuthentication(userEntity);
+
+        Optional<PortfolioStockEntity> portfolioStockFound = portfolioStockService
+                .portfolioStock(requestBody.id.longValue());
+
+        if (portfolioStockFound.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock not found");
+        }
+        if (!portfolioStockFound.get().getUser().equals(userEntity)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Stock does not belong to user");
+        }
+
+        PortfolioStockEntity portfolioStockEntity = portfolioStockMapper.mapFrom(requestBody.portfolioStock);
+        portfolioStockEntity.setUser(portfolioStockFound.get().getUser());
+        portfolioStockEntity.setStock(portfolioStockFound.get().getStock());
+
+        portfolioStockEntity = portfolioStockService.createUpdatePortfolioStock(
+                portfolioStockEntity.getId(),
+                portfolioStockEntity);
+
+        return portfolioStockMapper.mapTo(portfolioStockEntity);
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class DeletePortfolioStockRequest {
+        public UserDto user;
+        public Number id;
+    }
+
+    @PostMapping(path = "/portfolio/stock/delete")
+    public Boolean deletePortfolioStock(@RequestBody DeletePortfolioStockRequest requestBody) {
+        UserEntity userEntity = userMapper.mapFrom(requestBody.user);
+        userEntity = userService.checkAuthentication(userEntity);
+
+        Optional<PortfolioStockEntity> portfolioStockEntity = portfolioStockService
+                .portfolioStock(requestBody.id.longValue());
+
+        if (portfolioStockEntity.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Stock not found");
+        }
+        if (!portfolioStockEntity.get().getUser().equals(userEntity)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Stock does not belong to user");
+        }
+
+        return portfolioStockService.detelePortfolioStock(portfolioStockEntity.get().getId());
     }
 
 }

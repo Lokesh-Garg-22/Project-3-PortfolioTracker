@@ -2,6 +2,7 @@ package com.lokesh.portfolioTracker.services.impl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,11 @@ public class PortfolioStockServiceImpl implements PortfolioStockService {
     }
 
     @Override
+    public Optional<PortfolioStockEntity> portfolioStock(Long id) {
+        return portfolioStockRepository.findById(id);
+    }
+
+    @Override
     public List<PortfolioStockEntity> portfolioStocks() {
         List<PortfolioStockEntity> response = new LinkedList<>();
         for (PortfolioStockEntity entity : portfolioStockRepository.findAll()) {
@@ -41,6 +47,12 @@ public class PortfolioStockServiceImpl implements PortfolioStockService {
             response.add(entity);
         }
         return response;
+    }
+
+    @Override
+    public Boolean detelePortfolioStock(Long id) {
+        portfolioStockRepository.deleteById(id);
+        return !portfolioStockRepository.existsById(id);
     }
 
 }
