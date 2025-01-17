@@ -1,5 +1,12 @@
 FROM openjdk:23-jdk
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+WORKDIR /home
+ENV PATH="$PATH:/home"
+COPY ./.mvn ./.mvn
+COPY ./pom.xml ./pom.xml
+COPY ./mvnw ./mvnw
+COPY ./mvnw.cmd ./mvnw.cmd
+RUN ["mvnw", "clean"]
+COPY . .
+RUN ["mvnw", "clean", "verify"]
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["mvnw", "spring-boot:run"]
