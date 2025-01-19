@@ -1,6 +1,4 @@
 FROM openjdk:23-jdk
-WORKDIR /home
-ENV PATH="$PATH:/home"
-COPY . .
+COPY target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["mvnw", "clean", "verify", "spring-boot:run"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]
