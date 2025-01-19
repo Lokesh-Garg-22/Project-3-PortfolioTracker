@@ -23,7 +23,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { TypographyP } from "@/components/ui/typography";
 import { useToast } from "@/hooks/use-toast";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
 import { Stock } from "@/lib/interfaces";
@@ -31,10 +30,9 @@ import localdata from "@/lib/localdata";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -87,6 +85,7 @@ export default function AddStockForm({
       quantity = parseInt(values.quantity as string);
     } catch (e) {
       form.setError("quantity", { message: "Enter a Number!" });
+      console.log(e);
       return;
     }
 
@@ -127,76 +126,7 @@ export default function AddStockForm({
         <FormField
           control={form.control}
           name="stock"
-          render={({ field }) => {
-            const [open, setOpen] = useState(false);
-            const [value, setValue] = useState(form.getValues("stock"));
-
-            return (
-              <>
-                <FormItem>
-                  <FormLabel>Stock</FormLabel>
-                  <FormControl>
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="w-full justify-between"
-                        >
-                          {value
-                            ? stocks.find((stock) => stock.symbol == value)
-                                ?.symbol
-                            : "Select stock..."}
-                          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Search stock..." />
-                          <CommandList>
-                            <CommandEmpty>No stock found.</CommandEmpty>
-                            <CommandGroup>
-                              {stocks.map((stock) => (
-                                <CommandItem
-                                  key={stock.symbol}
-                                  value={stock.symbol}
-                                  onSelect={(currentValue) => {
-                                    const valueToSet =
-                                      currentValue == value ? "" : currentValue;
-                                    setValue(valueToSet);
-                                    form.setValue("stock", valueToSet);
-                                    form.clearErrors("stock");
-                                    setOpen(false);
-                                  }}
-                                >
-                                  <CheckIcon
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      value == stock.symbol
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {stock.symbol}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-                {value && (
-                  <StockDetails
-                    stock={stocks.find((stock) => stock.symbol == value)}
-                  />
-                )}
-              </>
-            );
-          }}
+          render={() => <StockFieldRender form={form} stocks={stocks} />}
         />
         <FormField
           control={form.control}
@@ -229,6 +159,78 @@ export default function AddStockForm({
         </div>
       </form>
     </Form>
+  );
+}
+
+function StockFieldRender({
+  form,
+  stocks,
+}: {
+  form: UseFormReturn<z.infer<typeof formSchema>>;
+  stocks: Stock[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(form.getValues("stock"));
+
+  return (
+    <>
+      <FormItem>
+        <FormLabel>Stock</FormLabel>
+        <FormControl>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between"
+              >
+                {value
+                  ? stocks.find((stock) => stock.symbol == value)?.symbol
+                  : "Select stock..."}
+                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search stock..." />
+                <CommandList>
+                  <CommandEmpty>No stock found.</CommandEmpty>
+                  <CommandGroup>
+                    {stocks.map((stock) => (
+                      <CommandItem
+                        key={stock.symbol}
+                        value={stock.symbol}
+                        onSelect={(currentValue) => {
+                          const valueToSet =
+                            currentValue == value ? "" : currentValue;
+                          setValue(valueToSet);
+                          form.setValue("stock", valueToSet);
+                          form.clearErrors("stock");
+                          setOpen(false);
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value == stock.symbol ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {stock.symbol}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+      {value && (
+        <StockDetails stock={stocks.find((stock) => stock.symbol == value)} />
+      )}
+    </>
   );
 }
 

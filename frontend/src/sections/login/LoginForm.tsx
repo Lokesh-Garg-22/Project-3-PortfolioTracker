@@ -98,7 +98,7 @@ export default function LoginForm({
           )}
         />
         <TypographyP>
-          Don't have an account?
+          Don&apos;t have an account?
           <Button variant="link" className="px-2" asChild>
             <Link href="/signup">SignUp</Link>
           </Button>

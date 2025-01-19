@@ -78,6 +78,7 @@ export default function UpdateStockForm({
       quantity = parseInt(values.quantity as string);
     } catch (e) {
       form.setError("quantity", { message: "Enter a Number!" });
+      console.log(e);
       return;
     }
 

@@ -22,11 +22,10 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { fetchBackendUrl, fetchHeaders } from "@/lib/config";
-import type { PortfolioStock, Stock } from "@/lib/interfaces";
+import type { PortfolioStock } from "@/lib/interfaces";
 import localdata from "@/lib/localdata";
 import { PlusIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PortfolioTable() {
