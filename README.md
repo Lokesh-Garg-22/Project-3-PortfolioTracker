@@ -5,7 +5,7 @@ A Project where you can create and manage your portfolio.
 Currently, it only has 5 stocks, but more can be added to the code.
 And yes don't worry, the stock price is updated every midnight.
 
-#### Live Demo: https://portfolio-tracker-kappa.vercel.app/dashboard
+#### Live Demo: https://portfolio-tracker-kappa.vercel.app/
 
 ## Local Deployment
 
