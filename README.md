@@ -11,9 +11,9 @@ And yes don't worry, the stock price is updated every midnight.
 
 To run it locally you will need to run three services
 
-### 1. Postgres (Docker)
+### 1. MySql (Docker)
 
-`docker run --env=POSTGRES_PASSWORD="your password" -p 5432:5432 -d postgres:14.15-alpine3.21`
+`docker run --env=MYSQL_DATABASE="your database" --env=MYSQL_PASSWORD="your password" --env=MYSQL_ROOT_PASSWORD="your root password" --env=MYSQL_USER="your user" -p 3306:3306 -d mysql:latest`
 
 ### 2. Backend (Java)
 
